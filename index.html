@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarjeta digital · Brandco Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#0F2138; --parchment:#E7E2D6; --parchment-soft:#F1EDE3;
+    --brass:#B8935F; --brass-light:#D9BD8C; --teal:#2C5F5D;
+    --brand-primary:#0B2A4A; --brand-accent:#3EE86E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--ink);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(184,147,95,0.10), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(44,95,93,0.14), transparent 50%);
+    color: var(--parchment-soft);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100dvh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px;
+    padding: 24px;
+  }
+
+  .card-scene{ width:min(86vw, 38dvh, 300px); aspect-ratio:0.42/1; perspective:1600px;}
+  .card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; -webkit-transform-style:preserve-3d; transition:transform .8s cubic-bezier(.2,.9,.25,1); cursor:pointer;}
+  .card.flipped{ transform:rotateY(180deg);}
+  .face{
+    position:absolute; inset:0; border-radius:16px;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden; -moz-backface-visibility:hidden;
+    box-shadow:0 20px 40px -16px rgba(0,0,0,0.55); overflow:hidden;
+    opacity:1; transition: opacity .01s linear .35s;
+  }
+  .face-back{ opacity:0; pointer-events:none; }
+  .card.flipped .face-front{ opacity:0; pointer-events:none; }
+  .card.flipped .face-back{ opacity:1; pointer-events:auto; }
+
+  /* ---- FRENTE: dividido en dos zonas de color ---- */
+  .face-front{ color:var(--ink); padding:0; display:flex; flex-direction:column; }
+
+  .front-top{
+    flex:1; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
+    padding:14px 18px 10px; display:flex; flex-direction:column; gap:11px; position:relative; overflow:hidden;
+  }
+  .front-top::before{ content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 7px); pointer-events:none;}
+
+  .front-bottom{
+    background: linear-gradient(165deg, var(--parchment) 0%, var(--parchment-soft) 100%);
+    border-top:1px solid rgba(20,23,28,0.14);
+    padding:10px 18px 14px; display:flex; flex-direction:column; gap:12px; position:relative;
+  }
+
+  .brand-logo{ display:flex; justify-content:center; margin:0 0 2px; position:relative; z-index:1; }
+  .brand-logo img{ width:88%; max-width:240px; height:auto; display:block; margin-left:14px; }
+  .avatar{ display:flex; justify-content:center; margin:4px 0 2px; position:relative; z-index:1; }
+.avatar img{ width:96px; height:96px; border-radius:50%; object-fit:cover; border:1.5px solid var(--brand-accent); display:block; }
+
+  .work-label{ font-family:'Alexandria regular',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,241,231,0.45); margin:0; position:relative; z-index:1;text-align:center;}
+.work-strip{
+  display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+  gap:8px; position:relative; z-index:1;
+  scrollbar-width:none; -ms-overflow-style:none;
+}
+.work-strip::-webkit-scrollbar{ display:none; }  .work-tile{ flex:0 0 100%; scroll-snap-align:center;
+  aspect-ratio:1.5; border-radius:10px; position:relative; overflow:hidden;
+  object-fit:cover; width:100%; height:100%; display:block;
+}
+  .work-tile.placeholder:nth-child(1){background:linear-gradient(140deg,#5c7079,#324047);}
+  .work-tile.placeholder:nth-child(2){background:linear-gradient(140deg,#7a6647,#453a28);}
+  .work-tile.placeholder:nth-child(3){background:linear-gradient(140deg,#4d6d69,#2a3e3b);}
+  .work-tile.placeholder:nth-child(4){background:linear-gradient(140deg,#8a6a52,#4a3626);}
+  .work-dots{ display:flex; justify-content:center; gap:5px; margin-top:2px; position:relative; z-index:1; }
+.work-dots .dot{ width:5px; height:5px; border-radius:50%; background:rgba(245,241,231,0.3); transition:background .2s; }
+.work-dots .dot.active{ background:var(--brand-accent); }
+
+  .person{ position:relative; z-index:1; margin-top:1px; text-align:center;}
+  .person .name{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; line-height:1.12; margin:0 0 3px; color:#F5F1E7;}
+  .person .role{ font-size:12px; color:rgba(245,241,231,0.65); margin:0;}
+
+  .bio{ font-size:13px; line-height:1.45; color:rgba(245,241,231,0.7); margin:0; position:relative; z-index:1;text-align:center; }
+
+  .social-row{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px; position:relative; z-index:1;}
+  .social-row a{ width:26px; height:26px; border-radius:50%; background:var(--brand-primary); color:var(--brand-accent); display:flex; align-items:center; justify-content:center; font-size:12px; text-decoration:none;}
+
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; position:relative; z-index:1;}
+  .foot-row .company{ font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.04em; color:rgba(20,23,28,0.55);}
+  .tap-hint{ font-size:8.5px; font-family:'JetBrains Mono',monospace; color:rgba(20,23,28,0.4); letter-spacing:.05em;}
+
+  .face-back{
+    background: linear-gradient(165deg,#1B2027 0%, var(--ink) 100%);
+    transform:rotateY(180deg);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:20px;
+  }
+  .seal{ position:relative; width:56px; height:56px; color:var(--brand-accent);}
+  .seal svg{ width:100%; height:100%; animation:spin 14s linear infinite;}
+  .seal .ring{ stroke:currentColor; opacity:0.35; }
+  .seal .ring-text{ fill:currentColor; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .seal .check{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:18px; color:inherit;}
+  .qr-holder{ background:#F5F1E7; padding:8px; border-radius:10px;}
+  .qr-holder img, .qr-holder canvas{ width:104px !important; height:104px !important; display:block;}
+  .back-copy{ text-align:center;}
+  .verified-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brand-accent); margin:0 0 4px;}
+  .site{ font-size:11px; color:rgba(245,241,231,0.65); margin:0; max-width:200px; word-break:break-all;}
+
+  .tap-caption{ font-size:12px; color:rgba(245,241,231,0.4); text-align:center; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+  <div class="card-scene">
+    <div class="card" id="cardEl">
+      <div class="face face-front">
+
+        <div class="front-top">
+          <div class="brand-logo">
+            <img src="logo.png" alt="Brandco">
+          </div>
+
+          <div class="avatar">
+  <img src="perfil.jpg" alt="Gianfranco Ginocchio">
+</div>
+
+          <div class="person">
+            <p class="name">Gianfranco Ginocchio</p>
+            <p class="role">Gestor Gráfico Publicitario</p>
+          </div>
+
+          <p class="bio">“Somos BRANDCO un estudio de diseño gráfico apasionado por el
+poder del BRANDING para transformar negocios.</p>
+          <p class="work-label">Trabajos recientes</p>
+          <div class="work-strip">
+            <!-- Reemplaza cada div por: <img src="URL-DE-TU-FOTO" class="work-tile"> -->
+            <div class="work-tile placeholder"></div>
+            <div class="work-tile placeholder"></div>
+            <div class="work-tile placeholder"></div>
+            <div class="work-tile placeholder"></div>
+          </div>
+          <div class="work-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <div class="front-bottom">
+          <div class="social-row">
+            <a href="https://instagram.com/tu_usuario" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/00000000000" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://facebook.com/tu_pagina" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://brandcostudio.net" title="Sitio web"><i class="fa-solid fa-globe"></i></a>
+          </div>
+          <div class="foot-row">
+            <span class="company">brandcostudio.net</span>
+            <span class="tap-hint">TOCAR ↻</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="face face-back">
+        <div class="seal">
+          <svg viewBox="0 0 100 100">
+            <defs><path id="circlePath" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/></defs>
+            <circle class="ring" cx="50" cy="50" r="46" fill="none" stroke-width="1"/>
+            <text class="ring-text" font-size="8.2" letter-spacing="2" font-family="JetBrains Mono, monospace">
+              <textPath href="#circlePath">· AUTENTICADO · VERIFICADO · AUTENTICADO · VERIFICADO </textPath>
+            </text>
+          </svg>
+          <div class="check">✓</div>
+        </div>
+        <div class="qr-holder"><div id="qrcode"></div></div>
+        <div class="back-copy">
+          <p class="verified-label">Perfil verificado</p>
+          <p class="site">brandcostudio.net/portafolio</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="tap-caption">toca para verificar</p>
+
+<script>
+  const strip = document.querySelector('.work-strip');
+const dots = document.querySelectorAll('.work-dots .dot');
+strip.addEventListener('click', e => e.stopPropagation());
+strip.addEventListener('scroll', () => {
+  const index = Math.round(strip.scrollLeft / strip.clientWidth);
+  dots.forEach((d, i) => d.classList.toggle('active', i === index));
+});
+  document.getElementById('cardEl').addEventListener('click', function(){ this.classList.toggle('flipped'); });
+
+  new QRCode(document.getElementById('qrcode'), {
+    text: 'https://brandcostudio.net/portafolio',
+    width: 104, height: 104,
+    colorDark: '#0F2138', colorLight: '#F5F1E7',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>
