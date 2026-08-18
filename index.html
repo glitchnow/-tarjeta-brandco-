@@ -6,12 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="logo.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B2A4A">
+<link rel="apple-touch-icon" href="logo.png">
 <title>Tarjeta digital · Brandco Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -31,11 +31,11 @@
     font-family:'Space Grotesk', sans-serif;
     min-height:100dvh;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:18px;
-    padding: 24px;
+    gap:14px;
+    padding: 12px;
   }
 
-  .card-scene{ width:min(86vw, 38dvh, 300px); aspect-ratio:0.42/1; perspective:1600px;}
+  .card-scene{ width:min(92vw, 46dvh, 340px); aspect-ratio:0.42/1; perspective:1600px;}
   .card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; -webkit-transform-style:preserve-3d; transition:transform .8s cubic-bezier(.2,.9,.25,1); cursor:pointer;}
   .card.flipped{ transform:rotateY(180deg);}
   .face{
@@ -48,49 +48,56 @@
   .card.flipped .face-front{ opacity:0; pointer-events:none; }
   .card.flipped .face-back{ opacity:1; pointer-events:auto; }
 
-  /* ---- FRENTE: dividido en dos zonas de color ---- */
-  .face-front{ color:var(--ink); padding:0; display:flex; flex-direction:column; }
+  /* ---- FRENTE: dividido en dos zonas de color, todo con altura flexible ---- */
+  .face-front{ color:var(--ink); padding:0; display:flex; flex-direction:column; height:100%; }
 
   .front-top{
-    flex:1; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
-    padding:14px 18px 10px; display:flex; flex-direction:column; gap:11px; position:relative; overflow:hidden;
+    flex:1; min-height:0; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
+    padding:12px 18px 8px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden;
   }
   .front-top::before{ content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 7px); pointer-events:none;}
 
   .front-bottom{
-    background: linear-gradient(165deg, var(--parchment) 0%, var(--parchment-soft) 100%);
+    flex-shrink:0; background: linear-gradient(165deg, var(--parchment) 0%, var(--parchment-soft) 100%);
     border-top:1px solid rgba(20,23,28,0.14);
     padding:10px 18px 14px; display:flex; flex-direction:column; gap:12px; position:relative;
   }
 
-  .brand-logo{ display:flex; justify-content:center; margin:0 0 2px; position:relative; z-index:1; }
+  .brand-logo{ flex-shrink:0; display:flex; justify-content:center; margin:0 0 2px; position:relative; z-index:1; }
   .brand-logo img{ width:88%; max-width:240px; height:auto; display:block; margin-left:14px; }
-  .avatar{ display:flex; justify-content:center; margin:4px 0 2px; position:relative; z-index:1; }
-.avatar img{ width:96px; height:96px; border-radius:50%; object-fit:cover; border:1.5px solid var(--brand-accent); display:block; }
 
-  .work-label{ font-family:'Alexandria regular',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,241,231,0.45); margin:0; position:relative; z-index:1;text-align:center;}
-.work-strip{
-  display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
-  gap:8px; position:relative; z-index:1;
-  scrollbar-width:none; -ms-overflow-style:none;
-}
-.work-strip::-webkit-scrollbar{ display:none; }  .work-tile{ flex:0 0 100%; scroll-snap-align:center;
-  aspect-ratio:1.5; border-radius:10px; position:relative; overflow:hidden;
-  object-fit:cover; width:100%; height:100%; display:block;
-}
+  .avatar{ flex-shrink:0; display:flex; justify-content:center; margin:2px 0; position:relative; z-index:1; }
+  .avatar img{ width:66px; height:66px; border-radius:50%; object-fit:cover; border:2px solid var(--brand-accent); display:block; }
+
+  .person{ flex-shrink:0; position:relative; z-index:1; text-align:center; }
+  .person .name{ font-family:'Fraunces',serif; font-weight:600; font-size:21px; line-height:1.1; margin:0 0 3px; color:#F5F1E7;}
+  .person .role{ font-size:11.5px; color:rgba(245,241,231,0.65); margin:0;}
+
+  .bio{ flex-shrink:0; font-size:12.5px; line-height:1.4; color:rgba(245,241,231,0.7); margin:0; position:relative; z-index:1; text-align:center; }
+
+  .work-label{ flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,241,231,0.45); margin:4px 0 0; position:relative; z-index:1; text-align:center; }
+
+  .work-dots{ flex-shrink:0; display:flex; justify-content:center; gap:5px; margin:4px 0; position:relative; z-index:1; }
+  .work-dots .dot{ width:5px; height:5px; border-radius:50%; background:rgba(245,241,231,0.3); transition:background .2s; }
+  .work-dots .dot.active{ background:var(--brand-accent); }
+
+  /* El carrusel ocupa TODO el espacio restante disponible, nunca se desborda */
+  .work-strip{
+    flex:1; min-height:40px;
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+    gap:8px; position:relative; z-index:1;
+    scrollbar-width:none; -ms-overflow-style:none;
+  }
+  .work-strip::-webkit-scrollbar{ display:none; }
+  .work-tile{
+    flex:0 0 100%; scroll-snap-align:center; height:100%; width:100%;
+    border-radius:10px; position:relative; overflow:hidden;
+    object-fit:cover; display:block;
+  }
   .work-tile.placeholder:nth-child(1){background:linear-gradient(140deg,#5c7079,#324047);}
   .work-tile.placeholder:nth-child(2){background:linear-gradient(140deg,#7a6647,#453a28);}
   .work-tile.placeholder:nth-child(3){background:linear-gradient(140deg,#4d6d69,#2a3e3b);}
   .work-tile.placeholder:nth-child(4){background:linear-gradient(140deg,#8a6a52,#4a3626);}
-  .work-dots{ display:flex; justify-content:center; gap:5px; margin-top:2px; position:relative; z-index:1; }
-.work-dots .dot{ width:5px; height:5px; border-radius:50%; background:rgba(245,241,231,0.3); transition:background .2s; }
-.work-dots .dot.active{ background:var(--brand-accent); }
-
-  .person{ position:relative; z-index:1; margin-top:1px; text-align:center;}
-  .person .name{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; line-height:1.12; margin:0 0 3px; color:#F5F1E7;}
-  .person .role{ font-size:12px; color:rgba(245,241,231,0.65); margin:0;}
-
-  .bio{ font-size:13px; line-height:1.45; color:rgba(245,241,231,0.7); margin:0; position:relative; z-index:1;text-align:center; }
 
   .social-row{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px; position:relative; z-index:1;}
   .social-row a{ width:26px; height:26px; border-radius:50%; background:var(--brand-primary); color:var(--brand-accent); display:flex; align-items:center; justify-content:center; font-size:12px; text-decoration:none;}
@@ -131,29 +138,29 @@
           </div>
 
           <div class="avatar">
-  <img src="perfil.jpg" alt="Gianfranco Ginocchio">
-</div>
+            <img src="perfil.jpg" alt="Gianfranco Ginocchio">
+          </div>
 
           <div class="person">
             <p class="name">Gianfranco Ginocchio</p>
             <p class="role">Gestor Gráfico Publicitario</p>
           </div>
 
-          <p class="bio">“Somos BRANDCO un estudio de diseño gráfico apasionado por el
-poder del BRANDING para transformar negocios.</p>
+          <p class="bio">"Somos BRANDCO un estudio de diseño gráfico apasionado por el poder del BRANDING para transformar negocios."</p>
+
           <p class="work-label">Trabajos recientes</p>
+          <div class="work-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
           <div class="work-strip">
             <!-- Reemplaza cada div por: <img src="URL-DE-TU-FOTO" class="work-tile"> -->
             <div class="work-tile placeholder"></div>
             <div class="work-tile placeholder"></div>
             <div class="work-tile placeholder"></div>
             <div class="work-tile placeholder"></div>
-          </div>
-          <div class="work-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
           </div>
         </div>
 
@@ -195,12 +202,13 @@ poder del BRANDING para transformar negocios.</p>
 
 <script>
   const strip = document.querySelector('.work-strip');
-const dots = document.querySelectorAll('.work-dots .dot');
-strip.addEventListener('click', e => e.stopPropagation());
-strip.addEventListener('scroll', () => {
-  const index = Math.round(strip.scrollLeft / strip.clientWidth);
-  dots.forEach((d, i) => d.classList.toggle('active', i === index));
-});
+  const dots = document.querySelectorAll('.work-dots .dot');
+  strip.addEventListener('click', e => e.stopPropagation());
+  strip.addEventListener('scroll', () => {
+    const index = Math.round(strip.scrollLeft / strip.clientWidth);
+    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  });
+
   document.getElementById('cardEl').addEventListener('click', function(){ this.classList.toggle('flipped'); });
 
   new QRCode(document.getElementById('qrcode'), {
