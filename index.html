@@ -21,21 +21,23 @@
     --brand-primary:#0B2A4A; --brand-accent:#3EE86E;
   }
   *{box-sizing:border-box;}
+  html{ height:100%; }
   html,body{margin:0;padding:0;}
   body{
+    height:100dvh; /* altura EXPLÍCITA, no un mínimo — esto es lo que hace confiable el flex:1 de abajo */
     background: var(--ink);
     background-image:
       radial-gradient(circle at 12% 8%, rgba(184,147,95,0.10), transparent 45%),
       radial-gradient(circle at 88% 92%, rgba(44,95,93,0.14), transparent 50%);
     color: var(--parchment-soft);
     font-family:'Space Grotesk', sans-serif;
-    min-height:100dvh;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:14px;
-    padding: 12px;
+    display:flex; flex-direction:column; align-items:center;
+    gap:8px;
+    padding: 10px;
+    overflow:hidden;
   }
 
-  .card-scene{ width:min(94vw, 380px); height:min(90dvh, 720px); perspective:1600px;}
+  .card-scene{ width:min(94vw, 380px); flex:1 1 0; min-height:0; perspective:1600px;}
   .card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; -webkit-transform-style:preserve-3d; transition:transform .8s cubic-bezier(.2,.9,.25,1); cursor:pointer;}
   .card.flipped{ transform:rotateY(180deg);}
   .face{
@@ -48,12 +50,12 @@
   .card.flipped .face-front{ opacity:0; pointer-events:none; }
   .card.flipped .face-back{ opacity:1; pointer-events:auto; }
 
-  /* ---- FRENTE: dividido en dos zonas de color, todo con altura flexible ---- */
+  /* ---- FRENTE: dividido en dos zonas de color ---- */
   .face-front{ color:var(--ink); padding:0; display:flex; flex-direction:column; height:100%; }
 
   .front-top{
     flex:1; min-height:0; justify-content:center; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
-    padding:12px 18px 8px; display:flex; flex-direction:column; gap:6px; position:relative; overflow:hidden;
+    padding:12px 18px 8px; display:flex; flex-direction:column; gap:8px; position:relative; overflow:hidden;
   }
   .front-top::before{ content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 7px); pointer-events:none;}
 
@@ -81,7 +83,7 @@
   .work-dots .dot{ width:5px; height:5px; border-radius:50%; background:rgba(245,241,231,0.3); transition:background .2s; }
   .work-dots .dot.active{ background:var(--brand-accent); }
 
-  /* El carrusel ocupa TODO el espacio restante disponible, nunca se desborda */
+  /* Carrusel con altura fija en proporción a su ancho, no "todo lo que sobre" */
   .work-strip{
     flex:0 0 auto; aspect-ratio:1.8;
     display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
@@ -123,7 +125,7 @@
   .verified-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--brand-accent); margin:0 0 4px;}
   .site{ font-size:11px; color:rgba(245,241,231,0.65); margin:0; max-width:200px; word-break:break-all;}
 
-  .tap-caption{ font-size:12px; color:rgba(245,241,231,0.4); text-align:center; font-family:'JetBrains Mono',monospace;}
+  .tap-caption{ flex-shrink:0; font-size:12px; color:rgba(245,241,231,0.4); text-align:center; font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
 <body>
