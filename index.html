@@ -163,6 +163,7 @@
           <div class="work-strip">
             <!-- Fotos del portafolio: guárdalas en la carpeta "portafolio" junto a index.html.
                  Para agregar o quitar fotos, solo agrega o borra líneas <img>. -->
+            <video src="video-dcards.mp4#t=0.1" class="work-tile" controls playsinline muted preload="metadata"></video>
             <img src="trabajo-1.jpg" class="work-tile" alt="Cartilla Sala RX Cielitico · Officegolden">
             <img src="trabajo-2.jpg" class="work-tile" alt="Cartilla RX Kaigen 40R · Officegolden" loading="lazy">
             <img src="trabajo-3.jpg" class="work-tile" alt="Cartilla LX7 · Officegolden" loading="lazy">
@@ -223,6 +224,8 @@
   strip.addEventListener('scroll', () => {
     const index = Math.round(strip.scrollLeft / strip.clientWidth);
     dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    // pausar el video si se desliza a otra imagen
+    strip.querySelectorAll('video').forEach(v => { if (!v.paused && strip.children[index] !== v) v.pause(); });
   });
 
   document.getElementById('cardEl').addEventListener('click', function(){ this.classList.toggle('flipped'); });
