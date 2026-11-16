@@ -134,6 +134,24 @@
   .site{ font-size:13px; color:rgba(245,241,231,0.65); margin:0; max-width:230px; word-break:break-all;}
 
   .tap-caption{ flex-shrink:0; font-size:12px; color:rgba(245,241,231,0.4); text-align:center; font-family:'JetBrains Mono',monospace;}
+  /* ---- Visor de imágenes a pantalla completa ---- */
+  .work-strip img.work-tile{ cursor:zoom-in; }
+  .lightbox{ position:fixed; inset:0; z-index:9999; background:#060E1A;
+    display:none; flex-direction:column; }
+  .lightbox.open{ display:flex; }
+  .lb-scroll{ flex:1; overflow:auto; display:flex; align-items:center; justify-content:center;
+    touch-action:pan-x pan-y pinch-zoom; -webkit-overflow-scrolling:touch; }
+  .lb-scroll img{ max-width:100%; max-height:100%; object-fit:contain; display:block; transition:max-width .2s; }
+  .lb-scroll.zoomed{ align-items:flex-start; justify-content:flex-start; }
+  .lb-scroll.zoomed img{ max-width:none; max-height:none; width:250%; }
+  .lb-btn{ position:absolute; width:44px; height:44px; border-radius:50%; border:none;
+    background:rgba(11,42,74,0.85); color:var(--brand-accent); font-size:18px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; }
+  .lb-close{ top:14px; right:14px; }
+  .lb-prev{ left:10px; top:50%; transform:translateY(-50%); }
+  .lb-next{ right:10px; top:50%; transform:translateY(-50%); }
+  .lb-hint{ position:absolute; bottom:14px; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(245,241,231,0.5); pointer-events:none; }
 </style>
 </head>
 <body>
@@ -210,6 +228,14 @@
     </div>
   </div>
 
+  <div class="lightbox" id="lightbox">
+    <button class="lb-btn lb-close" id="lbClose" type="button" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lb-btn lb-prev" id="lbPrev" type="button" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+    <button class="lb-btn lb-next" id="lbNext" type="button" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="lb-scroll" id="lbScroll"><img id="lbImg" alt=""></div>
+    <p class="lb-hint">Toca dos veces para acercar</p>
+  </div>
+
 <script>
   const strip = document.querySelector('.work-strip');
   // Crear un punto por cada foto del portafolio
@@ -226,6 +252,44 @@
     dots.forEach((d, i) => d.classList.toggle('active', i === index));
     // pausar el video si se desliza a otra imagen
     strip.querySelectorAll('video').forEach(v => { if (!v.paused && strip.children[index] !== v) v.pause(); });
+  });
+
+
+  // ---- Visor de imágenes: tocar una imagen la abre en grande ----
+  const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg'), lbScroll = document.getElementById('lbScroll');
+  const pics = [...strip.querySelectorAll('img.work-tile')];
+  let cur = 0;
+  function showPic(i){ cur = (i + pics.length) % pics.length; lbImg.src = pics[cur].currentSrc || pics[cur].src; lbImg.alt = pics[cur].alt; lbScroll.classList.remove('zoomed'); lbScroll.scrollTo(0,0); }
+  pics.forEach((img, i) => img.addEventListener('click', e => { e.stopPropagation(); showPic(i); lb.classList.add('open'); }));
+  function closeLb(){ lb.classList.remove('open'); lbScroll.classList.remove('zoomed'); }
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  document.getElementById('lbPrev').addEventListener('click', () => showPic(cur - 1));
+  document.getElementById('lbNext').addEventListener('click', () => showPic(cur + 1));
+  lbScroll.addEventListener('click', e => { if (e.target === lbScroll) closeLb(); });
+  lbImg.addEventListener('dblclick', e => {
+    const zoom = !lbScroll.classList.contains('zoomed');
+    lbScroll.classList.toggle('zoomed', zoom);
+    if (zoom){ const r = lbImg.getBoundingClientRect(); requestAnimationFrame(() => lbScroll.scrollTo((e.offsetX/ r.width)*lbImg.offsetWidth - lbScroll.clientWidth/2, (e.offsetY/ r.height)*lbImg.offsetHeight - lbScroll.clientHeight/2)); }
+  });
+  // deslizar a los lados para pasar de imagen (cuando no está ampliada)
+  let sx = null;
+  lbScroll.addEventListener('touchstart', e => { sx = e.touches.length === 1 ? e.touches[0].clientX : null; }, {passive:true});
+  lbScroll.addEventListener('touchend', e => { if (sx === null || lbScroll.classList.contains('zoomed')) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) showPic(cur + (dx < 0 ? 1 : -1)); sx = null; });
+  document.addEventListener('keydown', e => { if (!lb.classList.contains('open')) return; if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowRight') showPic(cur + 1); if (e.key === 'ArrowLeft') showPic(cur - 1); });
+
+  // ---- Video: al darle play se abre a pantalla completa y se puede girar el celular ----
+  strip.querySelectorAll('video').forEach(v => {
+    v.addEventListener('play', async () => {
+      try {
+        if (document.fullscreenElement || document.webkitFullscreenElement) return;
+        if (v.requestFullscreen) { await v.requestFullscreen(); }
+        else if (v.webkitEnterFullscreen) { v.webkitEnterFullscreen(); return; } // iPhone: reproductor nativo, gira con el celular
+        if (screen.orientation && screen.orientation.lock) { await screen.orientation.lock('landscape').catch(() => {}); }
+      } catch(err) {}
+    });
+  });
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
   });
 
   document.getElementById('cardEl').addEventListener('click', function(){ this.classList.toggle('flipped'); });
