@@ -24,6 +24,7 @@
   html{ height:100%; }
   html,body{margin:0;padding:0;}
   body{
+    height:100vh; /* respaldo para navegadores antiguos */
     height:100dvh; /* altura EXPLÍCITA, no un mínimo — esto es lo que hace confiable el flex:1 de abajo */
     background: var(--ink);
     background-image:
@@ -35,7 +36,7 @@
     overflow:hidden;
   }
 
-  .card-scene{ width:100vw; height:100dvh; perspective:1600px;}
+  .card-scene{ width:100vw; height:100vh; height:100dvh; perspective:1600px;}
   .card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; -webkit-transform-style:preserve-3d; transition:transform .8s cubic-bezier(.2,.9,.25,1); cursor:pointer;}
   .card.flipped{ transform:rotateY(180deg);}
   .face{
@@ -52,7 +53,7 @@
   .face-front{ color:var(--ink); padding:0; display:flex; flex-direction:column; height:100%; }
 
   .front-top{
-    flex:1; min-height:0; justify-content:centerflex-start; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
+    flex:1; min-height:0; justify-content:flex-start; background: linear-gradient(165deg, var(--brand-primary) 0%, #0A2440 100%);
     padding:12px 18px 8px; display:flex; flex-direction:column; gap:8px; position:relative; overflow:hidden;
   }
   .front-top::before{ content:''; position:absolute; inset:0; background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 7px); pointer-events:none;}
@@ -99,7 +100,7 @@
   .work-tile.placeholder:nth-child(3){background:linear-gradient(140deg,#4d6d69,#2a3e3b);}
   .work-tile.placeholder:nth-child(4){background:linear-gradient(140deg,#8a6a52,#4a3626);}
 
-  .social-row{ display:flex; align-items:center; justify-content:center; gap: 16px;px; margin-bottom:8px; position:relative; z-index:1;}
+  .social-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:8px; position:relative; z-index:1;}
   .social-row a{ width:28px; height:28px; border-radius:50%; background:var(--brand-primary); color:var(--brand-accent); display:flex; align-items:center; justify-content:center; font-size:12px; text-decoration:none;}
 
   .save-contact-btn{
@@ -155,21 +156,16 @@
             <p class="role">Gestor Gráfico Publicitario</p>
           </div>
 
-          <p class="bio">"Somos BRANDCO un estudio de diseño gráfico apasionado por el poder del BRANDING para transformar negocios."</p>
+          <p class="bio">"Somos BRANDCO, un estudio de diseño gráfico apasionado por el poder del BRANDING para transformar negocios."</p>
 
           <p class="work-label">portafolio</p>
-          <div class="work-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
+          <div class="work-dots"><!-- los puntos se generan solos según la cantidad de fotos --></div>
           <div class="work-strip">
-            <!-- Reemplaza cada div por: <img src="URL-DE-TU-FOTO" class="work-tile"> -->
-            <div class="work-tile placeholder"></div>
-            <div class="work-tile placeholder"></div>
-            <div class="work-tile placeholder"></div>
-            <div class="work-tile placeholder"></div>
+            <!-- Fotos del portafolio: guárdalas en la carpeta "portafolio" junto a index.html.
+                 Para agregar o quitar fotos, solo agrega o borra líneas <img>. -->
+            <img src="portafolio/trabajo-1.jpg" class="work-tile" alt="Cartilla Sala RX Cielitico · Officegolden">
+            <img src="portafolio/trabajo-2.jpg" class="work-tile" alt="Cartilla RX Kaigen 40R · Officegolden" loading="lazy">
+            <img src="portafolio/trabajo-3.jpg" class="work-tile" alt="Cartilla LX7 · Officegolden" loading="lazy">
           </div>
         </div>
 
@@ -178,13 +174,13 @@
             <a href="https://instagram.com/gianfrancoginocchio" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
             <a href="https://wa.me/+593962645804?text=Hola%2C%20vi%20tu%20tarjeta%20digital%20y%20quiero%20contactarte" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
             <a href="https://facebook.com/tu_pagina" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="https://brandcostudio.net" title="Sitio web"><i class="fa-solid fa-globe"></i></a>
+            <a href="https://thebrandcostudio.com" title="Sitio web"><i class="fa-solid fa-globe"></i></a>
           </div>
           <button class="save-contact-btn" id="saveContactBtn" type="button">
             <i class="fa-solid fa-address-card"></i> Guardar contacto
           </button>
           <div class="foot-row">
-            <span class="company">brandcostudio.net</span>
+            <span class="company">thebrandcostudio.com</span>
             <span class="tap-hint">TOCAR ↻</span>
           </div>
         </div>
@@ -205,7 +201,7 @@
         <div class="qr-holder"><div id="qrcode"></div></div>
         <div class="back-copy">
           <p class="verified-label">Perfil verificado</p>
-          <p class="site">brandcostudio.net/portafolio</p>
+          <p class="site">thebrandcostudio.com</p>
         </div>
       </div>
     </div>
@@ -213,7 +209,14 @@
 
 <script>
   const strip = document.querySelector('.work-strip');
-  const dots = document.querySelectorAll('.work-dots .dot');
+  // Crear un punto por cada foto del portafolio
+  const dotsBox = document.querySelector('.work-dots');
+  strip.querySelectorAll('.work-tile').forEach((_, i) => {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsBox.appendChild(d);
+  });
+  const dots = dotsBox.querySelectorAll('.dot');
   strip.addEventListener('click', e => e.stopPropagation());
   strip.addEventListener('scroll', () => {
     const index = Math.round(strip.scrollLeft / strip.clientWidth);
@@ -234,9 +237,9 @@
       'ORG:Brandco Studio',
       'TITLE:Gestor Gráfico Publicitario',
       'TEL;TYPE=CELL:+593962645804',
-      'URL:https://brandcostudio.net',
+      'URL:https://thebrandcostudio.com',
       'END:VCARD'
-    ].join('\n');
+    ].join('\r\n');
 
     const blob = new Blob([vcard], { type: 'text/vcard' });
     const url = URL.createObjectURL(blob);
@@ -246,11 +249,11 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1500); // esperar para que iPhone termine la descarga
   });
 
   new QRCode(document.getElementById('qrcode'), {
-    text: 'https://brandcostudio.net/portafolio',
+    text: 'https://thebrandcostudio.com',
     width: 130, height: 130,
     colorDark: '#0F2138', colorLight: '#F5F1E7',
     correctLevel: QRCode.CorrectLevel.M
