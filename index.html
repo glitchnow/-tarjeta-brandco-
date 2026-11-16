@@ -84,7 +84,7 @@
 
   /* Carrusel con altura fija en proporción a su ancho, no "todo lo que sobre" */
   .work-strip{
-    flex:0 0 auto; aspect-ratio:1.4;
+    flex:1 1 auto; min-height:120px; /* ocupa todo el espacio libre hasta los íconos */
     display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
     gap:8px; position:relative; z-index:1;
     scrollbar-width:none; -ms-overflow-style:none;
@@ -93,7 +93,7 @@
   .work-tile{
     flex:0 0 100%; scroll-snap-align:center; height:100%; width:100%;
     border-radius:10px; position:relative; overflow:hidden;
-    object-fit:cover; display:block;
+    object-fit:contain; background:#0A2440; display:block;
   }
   .work-tile.placeholder:nth-child(1){background:linear-gradient(140deg,#5c7079,#324047);}
   .work-tile.placeholder:nth-child(2){background:linear-gradient(140deg,#7a6647,#453a28);}
